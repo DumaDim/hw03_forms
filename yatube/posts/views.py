@@ -59,6 +59,8 @@ def post_detail(request, post_id):
 
 def post_create(request):
     form = PostForm(request.POST or None)
+    if request.user != post.author:
+        return redirect('posts:profile', request.user)
     if form.is_valid():
         post = form.save(commit=False)
         post.author = request.user
