@@ -9,14 +9,12 @@ POSTS_PER_PAGE = 10
 
 def index(request):
     post_list = Post.objects.all()
-    title = 'Последние обновления на сайте'
     paginator = Paginator(post_list, POSTS_PER_PAGE)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     context = {
         'page_obj': page_obj,
-        'post_list': post_list,
-        'title': title
+        'post_list': post_list
     }
     return render(request, 'posts/index.html', context)
 
@@ -60,30 +58,25 @@ def post_detail(request, post_id):
 
 
 def post_create(request):
-    if request.method == "POST":
-        form = PostForm(request.POST)
-
-        if form.is_valid():
-            post = form.save(commit=False)
-            post.author = request.user
-            post.save()
-            return redirect('posts:profile', username=request.user)
+    form = PostForm(request.POST or None)
+    if form.is_valid():
+        post = form.save(commit=False)
+        post.author = request.user
+        post.save()
+        return redirect('posts:profile', request.user)
     form = PostForm()
-    context = {
-        'form': form
-    }
-    return render(request, 'posts/create_post.html', context)
+    return render(request, 'posts/create_post.html', {'form': form})
 
 
 def post_edit(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     is_edit = 'is_edit'
-
-    if request.method == 'POST':
-        form = PostForm(request.POST, instance=post)
-        if form.is_valid():
-            form.save()
-        return redirect('posts:post_detail', post_id=post.pk)
+    form = PostForm(request.POST or None, instance=post)
+    if request.user != post.author:
+        return redirect('posts:post_detail', post_id)
+    if form.is_valid():
+        form.save()
+        return redirect('posts:post_detail', post_id)
 
     form = PostForm()
     return render(request, 'posts/create_post.html', {
