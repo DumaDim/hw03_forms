@@ -1,4 +1,5 @@
-# hw03_forms расширение проекта hw02_community https://github.com/DumaDim/hw02_community.git
+# hw03_forms 
+расширение проекта hw02_community https://github.com/DumaDim/hw02_community.git
 ## Описание проекта
 1. Создано и подключено приложение core:
     - размещён и зарегистрирован фильтр addclass, позволяющий добавлять CSS-класс к тегу шаблона;
